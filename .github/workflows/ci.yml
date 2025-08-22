@@ -32,6 +32,25 @@ jobs:
         if: hashFiles('requirements.yml') != ''
         run: ansible-galaxy collection install -r requirements.yml
 
+      # Step 4: Cache to save time when running tests
+      # Cache pip
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Cache ansible collections
+      - name: Cache Ansible Galaxy
+        uses: actions/cache@v4
+        with:
+          path: ~/.ansible/collections
+          key: ${{ runner.os }}-ansible-${{ hashFiles('requirements.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-ansible-
+
       # # Step 4. Run Molecule tests
       # - name: Run Molecule tests
       #   run: molecule test
