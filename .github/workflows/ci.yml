@@ -52,8 +52,10 @@ jobs:
         run: ansible-galaxy collection install -r requirements.yml
 
       # # Step 4. Run Molecule tests
-      # - name: Run Molecule tests
-      #   run: molecule test
+      - name: Run Molecule tests
+        run: |
+          cd roles/generate_markdown
+          molecule test
       # 
       # # Step 5. Generate docs
       # # Replace with your actual docs command (playbook or script)
