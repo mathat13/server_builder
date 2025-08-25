@@ -1,0 +1,16 @@
+---
+roles_dir: "{{ playbook_dir }}/../../roles"
+role: 
+file_name: "README.md"
+template_source: "readme.md.j2"
+readme:
+  role_name: user_management
+  description: 
+  requirements:
+                - none
+  role_variables:
+  dependencies:
+                - "Ubuntu system"
+  example_playbook:
+  license: "BSD"
+  author_info: "mathat13"

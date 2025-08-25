@@ -1,13 +1,26 @@
 - hosts: localhost
   gather_facts: false
   become: yes
-  vars_files:
-    - generate_markdown_vars.yml
-  tasks:
-    - name: create README for specified role
-      include_role:
-        name: mathat13.server_builder.generate_markdown
+  vars:
+    roles_dir: "{{ playbook_dir }}/../../roles"
+    vars_dir: "{{ playbook_dir }}/role_vars"
 
-    - name: print playbook path
-      debug:
-        var: playbook_dir
+  tasks:
+  - name: Find all role directories in collection
+    find:
+      paths: "{{ roles_dir }}"
+      file_type: directory
+      patterns: "*"
+    register: found_roles
+
+  - name: create README for each role specified in found roles
+    set_fact:
+      role_name: "{{ role_dir.path | basename }}"
+      output_path: "{{ roles_dir }}/{{ role_name }}/{{ role_name }}_README.md"
+      vars_file: "{{ vars_dir }}/{{ role_name }}_readme_vars.yml"
+    loop: "{{ found_roles.files }}"
+    loop_control:
+      loop_var: role_dir
+
+
+    
