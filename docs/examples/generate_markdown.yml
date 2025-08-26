@@ -1,4 +1,5 @@
 - hosts: localhost
+  connection: local
   gather_facts: false
   vars:
     roles_dir: "{{ playbook_dir }}/../../roles"
