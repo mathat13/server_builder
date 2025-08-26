@@ -41,7 +41,6 @@ jobs:
 
       - name: Build & install my collection
         run: |
-          cd ansible_collections/mathat13/server_builder
           ansible-galaxy collection build
           ansible-galaxy collection install *.tar.gz
 
@@ -61,12 +60,12 @@ jobs:
       # Replace with your actual docs command (playbook or script)
       - name: Generate Ansible Docs
         run: |
-          ansible-playbook ansible_collections/mathat13/server_builder/docs/examples/generate_markdown.yml
+          ansible-playbook docs/examples/generate_markdown.yml
 
       # # Step 4. Run Molecule tests
       - name: Run Molecule tests
         run: |
-          cd ansible_collections/mathat13/server_builder/roles/generate_markdown
+          cd roles/generate_markdown
           molecule test
 
       # # Step 6. Upload docs so you can download them from GitHub
