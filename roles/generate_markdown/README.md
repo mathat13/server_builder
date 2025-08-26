@@ -1,7 +1,7 @@
 generate_markdown
 =========
 
-Role intended to generate READMEs for roles, define your variables and run the example playbook.  Adding other templates is possible, have to define vars for each one though.
+Roll intended to generate READMEs for roles, define your variables and run the example playbook.  Adding other templates is possible, have to define vars for each one though.
 
 Requirements
 ------------
