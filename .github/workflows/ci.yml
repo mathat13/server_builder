@@ -56,13 +56,22 @@ jobs:
         if: hashFiles('requirements.yml') != ''
         run: ansible-galaxy collection install -r requirements.yml
 
-      # Step 5. Generate docs
+      # Step 4. Generate docs
       # Replace with your actual docs command (playbook or script)
       - name: Generate Ansible Docs
         run: |
           ansible-playbook docs/examples/generate_markdown.yml
 
-      # # Step 4. Run Molecule tests
+      # Step 6. Commit generated docs back to repo
+      - name: Commit generated docs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add roles/*/README.md
+          git commit -m "chore(docs): auto-update READMEs" || echo "No changes to commit"
+          git push
+
+      # # Step 6. Run Molecule tests
       - name: Run Molecule tests
         run: |
           cd roles/generate_markdown
