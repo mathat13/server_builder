@@ -66,11 +66,9 @@ jobs:
       # # Step 4. Run Molecule tests
       - name: Run Molecule tests
         run: |
-          cd roles/generate_markdown
+          cd ansible_collections/mathat13/server_builder/roles/generate_markdown
           molecule test
-          cd ../..
-        
-      # 
+
       # # Step 6. Upload docs so you can download them from GitHub
       # - name: Upload docs
       #   uses: actions/upload-artifact@v4
