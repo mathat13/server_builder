@@ -47,10 +47,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Ansible collections
+      - name: Install Ansible required collections
         if: hashFiles('requirements.yml') != ''
         run: ansible-galaxy collection install -r requirements.yml
       
+      - name: Build & install my collection
+        run: |
+          cd ansible_collections/mathat13/server_builder
+          ansible-galaxy collection build
+          ansible-galaxy collection install *.tar.gz
+
       # Step 5. Generate docs
       # Replace with your actual docs command (playbook or script)
       - name: Generate Ansible Docs
