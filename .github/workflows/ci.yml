@@ -55,9 +55,7 @@ jobs:
       # Replace with your actual docs command (playbook or script)
       - name: Generate Ansible Docs
         run: |
-          cd docs/examples
-          ansible-playbook generate_markdown.yml -i localhost,
-          cd ../..
+          ansible-playbook docs/examples/generate_markdown.yml
 
       # # Step 4. Run Molecule tests
       - name: Run Molecule tests

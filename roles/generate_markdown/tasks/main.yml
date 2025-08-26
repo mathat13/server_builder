@@ -8,7 +8,6 @@
   when: output_path is not defined
 
 - name: Generate markdown file from chosen template
-  become: true
   ansible.builtin.template:
     src: "{{ template_source }}"
     dest: "{{ output_path }}"
