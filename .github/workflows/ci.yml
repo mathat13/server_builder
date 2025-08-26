@@ -39,6 +39,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-ansible-
 
+      - name: Build & install my collection
+        run: |
+          pwd
+          # cd ansible_collections/mathat13/server_builder
+          # ansible-galaxy collection build
+          # ansible-galaxy collection install *.tar.gz
+
       # Step 4. Install dependencies
       # - pip deps from requirements.txt
       # - ansible collections from requirements.yml (if present)
@@ -50,13 +57,6 @@ jobs:
       - name: Install Ansible required collections
         if: hashFiles('requirements.yml') != ''
         run: ansible-galaxy collection install -r requirements.yml
-      
-      - name: Build & install my collection
-        run: |
-          ls
-          # cd ansible_collections/mathat13/server_builder
-          # ansible-galaxy collection build
-          # ansible-galaxy collection install *.tar.gz
 
       # Step 5. Generate docs
       # Replace with your actual docs command (playbook or script)
