@@ -61,7 +61,7 @@ jobs:
       # Replace with your actual docs command (playbook or script)
       - name: Generate Ansible Docs
         run: |
-          ansible-playbook ansible_collections\mathat13\server_builder\docs\examples\generate_markdown.yml
+          ansible-playbook ansible_collections/mathat13/server_builder/docs/examples/generate_markdown.yml
 
       # # Step 4. Run Molecule tests
       - name: Run Molecule tests
