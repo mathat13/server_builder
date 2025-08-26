@@ -56,11 +56,13 @@ jobs:
         run: |
           cd roles/generate_markdown
           molecule test
-      # 
-      # # Step 5. Generate docs
-      # # Replace with your actual docs command (playbook or script)
-      # - name: Generate Ansible Docs
-      #   run: ansible-playbook site.yml -t docs
+        
+      # Step 5. Generate docs
+      # Replace with your actual docs command (playbook or script)
+      - name: Generate Ansible Docs
+        run: |
+          cd /docs/examples
+          ansible-playbook generate_markdown.yml
       # 
       # # Step 6. Upload docs so you can download them from GitHub
       # - name: Upload docs

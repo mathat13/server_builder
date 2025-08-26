@@ -2,16 +2,13 @@
 ---
 # tasks file for roles/generate_markdown
 
-- name: Set output_path
+- name: Set output_path if not defined
   set_fact:
-    output_path: "{{ [ roles_dir, role, file_name ] | path_join | default('.') }}"
+    output_path: "{{ [ roles_dir, role_name, file_name ] | path_join | default('.') }}"
+  when: output_path is not defined
 
 - name: Generate markdown file from chosen template
   become: true
   ansible.builtin.template:
     src: "{{ template_source }}"
     dest: "{{ output_path }}"
-
-- name: Debug vars
-  debug:
-    var: output_path

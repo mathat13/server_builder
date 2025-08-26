@@ -2,7 +2,7 @@
 ---
 # defaults file for roles/generate_markdown
 roles_dir: "."
-role: "."
+role_name: "."
 file_name: "README.md"
 template_source: "readme.md.j2"
 

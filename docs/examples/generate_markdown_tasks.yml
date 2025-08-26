@@ -1,0 +1,20 @@
+- name: Set role_name
+  set_fact:
+    role_name: "{{ role_dir.path | basename }}"
+
+- name: Set vars_file using role_name
+  set_fact:
+    vars_file: "{{ vars_dir }}/{{ role_name }}_readme_vars.yml"
+
+- name: Include vars file if it exists
+  include_vars:
+    file: "{{ vars_file }}"
+  when: vars_file is file
+
+- name: Include the generate_markdown role
+  include_role:
+    name: mathat13.server_builder.generate_markdown
+  vars:
+    role_name: "{{ role_name }}"
+    output_path: "{{ roles_dir }}/{{ role_name }}/README.md"
+  

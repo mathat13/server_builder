@@ -4,6 +4,13 @@
   vars:
     roles_dir: "{{ playbook_dir }}/../../roles"
     vars_dir: "{{ playbook_dir }}/role_vars"
+    exclude_roles:
+      - zfs
+      - base
+      - nfs
+      - permissions
+      - user_management
+      - smb
 
   tasks:
   - name: Find all role directories in collection
@@ -13,14 +20,11 @@
       patterns: "*"
     register: found_roles
 
-  - name: create README for each role specified in found roles
-    set_fact:
-      role_name: "{{ role_dir.path | basename }}"
-      output_path: "{{ roles_dir }}/{{ role_name }}/{{ role_name }}_README.md"
-      vars_file: "{{ vars_dir }}/{{ role_name }}_readme_vars.yml"
+  - name: Generate README for each role
+    include_tasks: generate_markdown_tasks.yml
     loop: "{{ found_roles.files }}"
     loop_control:
       loop_var: role_dir
-
+    when: role_dir.path | basename not in exclude_roles
 
     

@@ -1,6 +1,6 @@
 ---
 roles_dir: "{{ playbook_dir }}/../../roles"
-role: 
+role_name: 
 file_name: "README.md"
 template_source: "readme.md.j2"
 readme:
