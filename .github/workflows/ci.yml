@@ -5,6 +5,9 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
   test-and-docs:          # One job (could be split later)
     runs-on: ubuntu-latest  # GitHub gives us a fresh Ubuntu VM
