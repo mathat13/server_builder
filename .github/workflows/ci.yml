@@ -9,8 +9,24 @@ permissions:
   contents: write
 
 jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      roles: ${{ steps.set-matrix.outputs.roles }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: set-matrix
+        run: |
+          roles=$(find roles -type d -name molecule -exec dirname {} \; | xargs -n1 basename | jq -R . | jq -s .)
+          echo "roles=$roles" >> $GITHUB_OUTPUT
+
   test-and-docs:          # One job (could be split later)
-    runs-on: ubuntu-latest  # GitHub gives us a fresh Ubuntu VM
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        role: ${{ fromJson(needs.discover.outputs.roles) }}
 
     steps:
       # Step 1. Checkout the repo so CI runner has your code
@@ -41,7 +57,8 @@ jobs:
           key: ${{ runner.os }}-ansible-${{ hashFiles('requirements.yml') }}
           restore-keys: |
             ${{ runner.os }}-ansible-
-
+      
+      # Build collection so that fqcn resolves correctly
       - name: Build & install my collection
         run: |
           ansible-galaxy collection build
@@ -59,31 +76,25 @@ jobs:
         if: hashFiles('requirements.yml') != ''
         run: ansible-galaxy collection install -r requirements.yml
 
-      # Step 4. Generate docs
-      # Replace with your actual docs command (playbook or script)
-      - name: Generate Ansible Docs
-        run: |
-          ansible-playbook docs/examples/generate_markdown.yml
-
-      # Step 6. Commit generated docs back to repo
-      - name: Commit generated docs
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add roles/*/README.md
-          git commit -m "chore(docs): auto-update READMEs" || echo "No changes to commit"
-          git push
+      ## Step 4. Generate docs
+      ## Replace with your actual docs command (playbook or script)
+      #- name: Generate Ansible Docs
+      #  run: |
+      #    ansible-playbook docs/examples/generate_markdown.yml
+#
+      ## Step 6. Commit generated docs back to repo
+      #- name: Commit generated docs
+      #  run: |
+      #    git config --global user.name "github-actions[bot]"
+      #    git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      #    git add roles/*/README.md
+      #    git commit -m "chore(docs): auto-update READMEs" || echo "No changes to commit"
+      #    git push
 
       # # Step 6. Run Molecule tests
-      - name: Run Molecule tests
+      - name: Run Molecule test
+        if: matrix.role != 'zfs'
         run: |
-          cd roles/generate_markdown
+          cd roles/${{ matrix.role }}
           molecule test
-
-      # # Step 6. Upload docs so you can download them from GitHub
-      # - name: Upload docs
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ansible-docs
-      #     path: ./docs
-      # 
+        
