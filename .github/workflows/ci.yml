@@ -22,82 +22,82 @@ jobs:
       - id: set-matrix
         run: |
           roles=$(find roles -type d -name molecule -exec dirname {} \; | xargs -n1 basename | jq -R . | jq -s .)
-          echo "roles=$roles" >> $GITHUB_OUTPUT
+          echo $roles
 
-  test-and-docs:          # One job (could be split later)
-    needs: discover
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        role: ${{ fromJson(needs.discover.outputs.roles) }}
-
-    steps:
-      # Step 1. Checkout the repo so CI runner has your code
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Step 2. Set up Python (default Ubuntu has Python but we pin a version)
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      
-      # Step 3: Cache to save time when running tests
-      # Cache pip
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      # Cache ansible collections
-      - name: Cache Ansible Galaxy
-        uses: actions/cache@v4
-        with:
-          path: ~/.ansible/collections
-          key: ${{ runner.os }}-ansible-${{ hashFiles('requirements.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-ansible-
-      
-      # Build collection so that fqcn resolves correctly
-      - name: Build & install my collection
-        run: |
-          ansible-galaxy collection build
-          ansible-galaxy collection install *.tar.gz
-
-      # Step 4. Install dependencies
-      # - pip deps from requirements.txt
-      # - ansible collections from requirements.yml (if present)
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Install Ansible required collections
-        if: hashFiles('requirements.yml') != ''
-        run: ansible-galaxy collection install -r requirements.yml
-
-      ## Step 4. Generate docs
-      ## Replace with your actual docs command (playbook or script)
-      #- name: Generate Ansible Docs
-      #  run: |
-      #    ansible-playbook docs/examples/generate_markdown.yml
+  #test-and-docs:          # One job (could be split later)
+  #  needs: discover
+  #  runs-on: ubuntu-latest
+  #  strategy:
+  #    matrix:
+  #      role: ${{ fromJson(needs.discover.outputs.roles) }}
 #
-      ## Step 6. Commit generated docs back to repo
-      #- name: Commit generated docs
-      #  run: |
-      #    git config --global user.name "github-actions[bot]"
-      #    git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      #    git add roles/*/README.md
-      #    git commit -m "chore(docs): auto-update READMEs" || echo "No changes to commit"
-      #    git push
-
-      # # Step 6. Run Molecule tests
-      - name: Run Molecule test
-        if: matrix.role != 'zfs'
-        run: |
-          cd roles/${{ matrix.role }}
-          molecule test
+  #  steps:
+  #    # Step 1. Checkout the repo so CI runner has your code
+  #    - name: Checkout code
+  #      uses: actions/checkout@v4
+#
+  #    # Step 2. Set up Python (default Ubuntu has Python but we pin a version)
+  #    - name: Set up Python
+  #      uses: actions/setup-python@v5
+  #      with:
+  #        python-version: "3.11"
+  #    
+  #    # Step 3: Cache to save time when running tests
+  #    # Cache pip
+  #    - name: Cache pip
+  #      uses: actions/cache@v4
+  #      with:
+  #        path: ~/.cache/pip
+  #        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+  #        restore-keys: |
+  #          ${{ runner.os }}-pip-
+#
+  #    # Cache ansible collections
+  #    - name: Cache Ansible Galaxy
+  #      uses: actions/cache@v4
+  #      with:
+  #        path: ~/.ansible/collections
+  #        key: ${{ runner.os }}-ansible-${{ hashFiles('requirements.yml') }}
+  #        restore-keys: |
+  #          ${{ runner.os }}-ansible-
+  #    
+  #    # Build collection so that fqcn resolves correctly
+  #    - name: Build & install my collection
+  #      run: |
+  #        ansible-galaxy collection build
+  #        ansible-galaxy collection install *.tar.gz
+#
+  #    # Step 4. Install dependencies
+  #    # - pip deps from requirements.txt
+  #    # - ansible collections from requirements.yml (if present)
+  #    - name: Install Python dependencies
+  #      run: |
+  #        python -m pip install --upgrade pip
+  #        pip install -r requirements.txt
+#
+  #    - name: Install Ansible required collections
+  #      if: hashFiles('requirements.yml') != ''
+  #      run: ansible-galaxy collection install -r requirements.yml
+#
+  #    ## Step 4. Generate docs
+  #    ## Replace with your actual docs command (playbook or script)
+  #    #- name: Generate Ansible Docs
+  #    #  run: |
+  #    #    ansible-playbook docs/examples/generate_markdown.yml
+##
+  #    ## Step 6. Commit generated docs back to repo
+  #    #- name: Commit generated docs
+  #    #  run: |
+  #    #    git config --global user.name "github-actions[bot]"
+  #    #    git config --global user.email "github-actions[bot]@users.noreply.github.com"
+  #    #    git add roles/*/README.md
+  #    #    git commit -m "chore(docs): auto-update READMEs" || echo "No changes to commit"
+  #    #    git push
+#
+  #    # # Step 6. Run Molecule tests
+  #    - name: Run Molecule test
+  #      if: matrix.role != 'zfs'
+  #      run: |
+  #        cd roles/${{ matrix.role }}
+  #        molecule test
         
