@@ -16,6 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install jq
+        run: sudo apt install -y jq
+
       - id: set-matrix
         run: |
           roles=$(find roles -type d -name molecule -exec dirname {} \; | xargs -n1 basename | jq -R . | jq -s .)
