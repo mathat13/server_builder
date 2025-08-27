@@ -3,3 +3,5 @@
   hosts: all
   roles:
     - role: mathat13.server_builder.nfs
+  vars:
+    running_in_molecule: true

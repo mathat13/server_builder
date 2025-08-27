@@ -30,6 +30,8 @@ jobs:
     strategy:
       matrix:
         role: ${{ fromJson(needs.discover.outputs.roles) }}
+        exclude:
+          - role: "zfs"  # Example of how to exclude a role from testing
     steps:
       # Step 1. Checkout the repo so CI runner has your code
       - name: Checkout code
@@ -94,7 +96,6 @@ jobs:
       
       ## Step 6. Run Molecule tests
       - name: Run Molecule test
-        if: matrix.role != 'zfs'
         run: |
           cd roles/${{ matrix.role }}
           molecule test

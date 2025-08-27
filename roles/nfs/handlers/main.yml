@@ -5,3 +5,20 @@
   ansible.builtin.systemd:
     name: nfs-kernel-server
     state: restarted
+
+- name: Restart nfs (systemd)
+  become: true
+  ansible.builtin.systemd:
+    name: nfs-kernel-server
+    state: restarted
+  when: not running_in_molecule | default(false) 
+  listen: "restart nfs services"
+
+- name: Restart nfs (molecule)
+  become: true
+  command: service nfs-kernel-server restart
+  async: 10
+  poll: 0
+  when: running_in_molecule | default(false)
+  changed_when: false
+  listen: "restart nfs services" 

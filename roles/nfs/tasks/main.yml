@@ -5,34 +5,42 @@
     name: nfs-kernel-server
     state: present
 
-- name: Fail if {{ nfs_share_path }} or {{ nfs_config_source }} is not present
+- name: Create nfs root dir if create_share_dirs is true
+  become: true
+  ansible.builtin.file:
+    path: "{{ nfs_share_path }}"
+    mode: "0775"
+    owner: root
+    state: directory
+  when: create_share_dirs
+
+- name: Fail if {{ nfs_share_path }} is not present
   block:
     - name: Register {{ nfs_share_path }} directory status to exports_dir
       stat:
         path: "{{ nfs_share_path }}"
       register: exports_dir
 
-    - name: Register nfs config status to file_status
-      ansible.builtin.stat:
-        path:  "{{ nfs_config_source }}"
-      register: file_status
-
     - name: Fail if {{ nfs_share_path }} is not prepared
       fail:
         msg: "{{ nfs_share_path }} must exist before running NFS role"
       when: not exports_dir.stat.exists
 
-    - name: Fail if nfs config is not prepared
-      fail:
-        msg: " {{ nfs_config_source }} must exist and be hardlinked to /etc/exports before running NFS role"
-      when: not file_status.stat.exists
-
-- name: Enable and start the service
+- name: Enable and start required services (systemd)
   become: true
   ansible.builtin.systemd:
     name: nfs-kernel-server
     enabled: yes
     state: started
+  when: not running_in_molecule | default(false)
+
+- name: Enable and start required services (molecule)
+  become: true
+  command: service nfs-kernel-server start
+  async: 10
+  poll: 0
+  when: running_in_molecule | default(false)
+  changed_when: false
 
 - name: Generate /etc/exports from template
   become: true
@@ -42,5 +50,5 @@
     owner: root
     group: root
     mode: '0644'
-  notify: Restart NFS
+  notify: restart nfs services
 
