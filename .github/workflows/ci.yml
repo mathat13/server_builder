@@ -21,8 +21,8 @@ jobs:
 
       - id: set-matrix
         run: |
-          roles=$(find roles -type d -name molecule -exec dirname {} \; | xargs -n1 basename | jq -R . | jq -s .)
-          echo $roles
+          roles=$(find roles -type d -name molecule -exec dirname {} \; | xargs -n1 basename | jq -R . | jq -cs .)
+          echo "roles=$roles" >> $GITHUB_OUTPUT
 
   #test-and-docs:          # One job (could be split later)
   #  needs: discover
